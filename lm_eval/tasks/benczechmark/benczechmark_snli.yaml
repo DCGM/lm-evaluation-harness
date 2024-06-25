@@ -1,0 +1,94 @@
+group: benczechmark_snli
+group_alias: CS SNLI
+include:
+ - templates/metrics/multichoice_metrics_yaml
+fewshot_split: test
+task:
+  - task: snli
+    task_alias: prompt-0
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Budu psát dvě věty, kterým říkám premisa a hypotéza. Hypotéza může z premisy vyplývat, nebo jí může protiřečit. Pokud ani nevyplývá, ani neprotiřečí, je neutrální. Vyhodnoťte, zda hypotézy vyplývají z premis, nebo jim protiřečí, nebo jsou neutrální."
+    doc_to_target: gold
+    doc_to_choice:
+        - "vyplývá"
+        - "protiřečí"
+        - "neutrální"
+    doc_to_text: 'V jakém vztahu je věta "{{cze_hypothesis}}" k premise "{{cze_premise}}"? Odpověď (vyplývá/protiřečí/neutrální): '
+  - task: snli
+    task_alias: prompt-1
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Potřebuji zjistit, jaký je vztah dvou vět. Druhá věta může z první vyplývat, může jí protiřečit nebo může být jejich vztah neutrální:\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "vyplývá"
+        - "protiřečí"
+        - "je neutrální"
+    doc_to_text: 'Jaký je vztah mezi větami "{{cze_premise}}" a "{{cze_hypothesis}}"? Druhá věta z první vyplývá? Protiřečí? Je neutrální? '
+  - task: snli
+    task_alias: prompt-2
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Máme dvě věty, na jejichž pořadí záleží. Můžou nastat tři případy: Druhá plyne z první (vyplývání), druhá je kontradikcí k první, druhá je neutrální k první.\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "vyplývání"
+        - "kontradikce"
+        - "neutrální"
+    doc_to_text: 'První věta je "{{cze_premise}}", druhá věta je "{{cze_hypothesis}}". Jaký je vztah mezi druhou a první větou? Plyne/kontradikce/neutrální? '
+  - task: snli
+    task_alias: prompt-3
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Úkol: Určete, jestli hypotéza plyne z premisy (vyplývání), je s ní ve sporu (kontradikce) nebo ani jedno:\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "vyplývání"
+        - "kontradikce"
+        - "ani jedno"
+    doc_to_text: 'Premisa: {{cze_premise}}\n\nHypotéza: {{cze_hypothesis}} ? Vyplývání, kontradikce, ani jedno?'
+  - task: snli
+    task_alias: prompt-4
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "První a druhá věta, na jejichž pořadí záleží, mají tři možné vztahy: entailment, contradiction, neutral.\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "entailment"
+        - "contradiction"
+        - "neutral"
+    doc_to_text: 'První věta: {{cze_premise}}, druhá věta: {{cze_hypothesis}}. \n\nNa základě předchozího odstavce, jaký je mezi nimi vztah? Vyberte entailment/contradiction/neutral.'
+  - task: snli
+    task_alias: prompt-5
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Vyplňuješ test schopnosti rozpoznávání přirozené inference. Odpověz inference/kontradikce/neutrální:\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "inference"
+        - "kontradikce"
+        - "neutrální"
+    doc_to_text: 'Premisa je: {{cze_premise}}\n\n Hypotéza je {{cze_hypothesis}}.\n\nJaký je inferenční vztah? Vyber inference, kontradikce nebo neutrální.'
+  - task: snli
+    task_alias: prompt-6
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: "Prozkoumej, jestli hypotéza plyne z premisy. Možnosti jsou vyplývá, je ve sporu, je neutrální:\n\n"
+    doc_to_target: gold
+    doc_to_choice:
+        - "vyplývá"
+        - "je ve sporu"
+        - "je neutrální"
+    doc_to_text: 'Hypotéza je "{{cze_hypothesis}}" a premisa je "{{cze_premise}}"? Jaký je mezi nimi vztah? Vyplývá? Je ve sporu? Je neutrální? Odpověď: '
+  - task: snli
+    task_alias: prompt-7
+    include: templates/multichoice/multi_class_template_yaml
+    dataset_path: CZLC/cs_snli
+    description: ""
+    doc_to_target: gold
+    doc_to_choice:
+      - "vyplývá"
+      - "odporuje"
+      - "neutrální"
+    doc_to_text: 'Předpokládej, že "{{cze_premise}}" je pravda. \n\nJaký je vztah předchozího tvrzení s tímto tvrzením: "{{cze_hypothesis}}"? Odpověď může být (vyplývá/odporuje/neutrální): '
