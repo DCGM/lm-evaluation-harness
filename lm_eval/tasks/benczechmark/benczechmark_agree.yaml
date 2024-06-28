@@ -1,0 +1,40 @@
+group: benczechmark_agree
+group_alias: Benchmark Agree
+task:
+- task: benchmark_agree_0
+  task_alias: prompt-0
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "V zadané větě je jedno slovo nahrazeno výrazem '____'. Z nabídnutých možností vyber slovo, po jehož doplnění bude zadaná věta gramaticky správná.
+    Odpovídej vždy pouze vhodným slovem bez dalšího komentáře."
+  doc_to_text: "Doplň správně chybějící slovo do této věty:\nVěta: {{sentence}}\nMožnosti:\n1. {{choices[0]}}\n2. {{choices[1]}}\n3. {{choices[2]}}\n4. {{choices[3]}}\n5. {{choices[4]}}\nOdpověď:\n"
+  doc_to_target: answer_idx
+  doc_to_choice: choices
+- task: benchmark_agree_1
+  task_alias: prompt-1
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Ve větě je jedno slovo nahrazeno výrazem '____'. Vyber slovo, které doplní větu tak, aby byla gramaticky správná. Odpověz jedním slovem bez dalších komentářů."
+  doc_to_text: "Vyber chybějící slovo do této věty:\nVěta: {{sentence}}\nMožnosti:\n1. {{choices[0]}}\n2. {{choices[1]}}\n3. {{choices[2]}}\n4. {{choices[3]}}\n5. {{choices[4]}}\nOdpověď:\n"
+  doc_to_target: answer_idx
+  doc_to_choice: choices
+- task: benchmark_agree_2
+  task_alias: prompt-2
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "V textu nahraď výraz '____'. Z nabídnutých možností zvol tu která sestaví větu gramaticky správnou. Výsledkem je odpověď jedním slovem bez jakýchkoliv komentářů."
+  doc_to_text: "Nahraď slovo do textu:\nText: {{sentence}}\nMožnosti:\n1. {{choices[0]}}\n2. {{choices[1]}}\n3. {{choices[2]}}\n4. {{choices[3]}}\n5. {{choices[4]}}\nOdpověď:\n"
+  doc_to_target: answer_idx
+  doc_to_choice: choices
+- task: benchmark_agree_3
+  task_alias: prompt-3
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Ve větě nahraď výraz '____' slovem z daných možností tak, aby věta byla gramaticky správná. Odpověz jedním slovem bez komentářů."
+  doc_to_text: "Vyber slovo do této věty:\nVěta: {{sentence}}\nMožnosti:\n1. {{choices[0]}}\n2. {{choices[1]}}\n3. {{choices[2]}}\n4. {{choices[3]}}\n5. {{choices[4]}}\nOdpověď:\n"
+  doc_to_target: answer_idx
+  doc_to_choice: choices
+- task: benchmark_agree_4
+  task_alias: prompt-4
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "V textu je jedno slovo nahrazeno výrazem '____'. Vyber jedno slovo, tak aby byla věta gramaticky správná. Odpovídej vždy pouze vhodným slovem bez dalších komentářů."
+  doc_to_text: "Vyber chybějící slovo do textu:\nText: {{sentence}}\nMožnosti:\n1. {{choices[0]}}\n2. {{choices[1]}}\n3. {{choices[2]}}\n4. {{choices[3]}}\n5. {{choices[4]}}\nOdpověď:\n"
+  doc_to_target: answer_idx
+  doc_to_choice: choices
+dataset_path: davidadamczyk/czechbench_agree

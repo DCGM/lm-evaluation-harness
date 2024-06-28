@@ -1,0 +1,44 @@
+group: benczechmark_subjectivity
+group_alias: Benchmark Subjectivity
+task:
+- task: benchmark_subjectivity_0
+  task_alias: prompt-0
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Urči zda zadaný výrok vyjadřuje subjektivní názor, nebo objektivní skutečnost. Odpověz slovem subjektivní pro subjektivní názor, nebo slovem objektivní pro objektivní skutečnost.
+Vždy odpovídej pouze tímto jedním číslem bez dalšího komentáře.\n"
+  doc_to_text: "Urči klasifikaci pro následující příklad:\nText: {{text}}\nOdpověď: "
+  doc_to_target: label
+  doc_to_choice: ["objektivní", "subjektivní"]
+- task: benchmark_subjectivity_1
+  task_alias: prompt-1
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Rozhodni, zda uvedený výrok vyjadřuje faktický názor, nebo osobní skutečnost. Odpověz slovem faktický pro faktický názor, nebo slovem osobní pro osobní skutečnost.
+Vždy odpovídej pouze jedním z těchto slov bez dalšího komentáře.\n"
+  doc_to_text: "Vytvoř klasifikaci pro následující příklad:\nText: {{text}}\nOdpověď: "
+  doc_to_target: label
+  doc_to_choice: ["faktický", "osobní"]
+- task: benchmark_subjectivity_2
+  task_alias: prompt-2
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Urči, jestli zadaný výrok vyjadřuje nezaujatý názor, nebo osobní skutečnost. Odpověz slovem nezaujatý pro nezaujatý názor nebo slovem osobní pro osobní skutečnost.
+Vždy odpověz pouze tímto jedním slovem bez dalšího komentáře.\n"
+  doc_to_text: "Vypracuj klasifikaci pro následující příklad:\nText: {{text}}\nOdpověď: "
+  doc_to_target: label
+  doc_to_choice: ["nezaujatý", "osobní"]
+- task: benchmark_subjectivity_3
+  task_alias: prompt-3
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Zjisti, zda zadaný výrok představuje věcný názor, nebo osobní skutečnost. Odpověz slovem věcný pro věcný názor nebo slovem osobní pro osobní skutečnost.
+Vždy odpověz pouze tímto jedním slovem bez dalšího komentáře.\n"
+  doc_to_text: "Vytvoř klasifikaci pro tento příklad:\nText: {{text}}\nOdpověď: "
+  doc_to_target: label
+  doc_to_choice: ["věcný", "osobní"]
+- task: benchmark_subjectivity_4
+  task_alias: prompt-4
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Zjisti, jestli daný výrok vyjadřuje faktický názor, nebo názorovou skutečnost. Odpověz slovem faktický pro faktický názor nebo slovem názorový pro názorovou skutečnost.
+Vždy odpověz pouze tímto jedním slovem bez dalšího komentáře.\n"
+  doc_to_text: "Generuj klasifikaci pro následující příklad:\nText: {{text}}\nOdpověď: "
+  doc_to_target: label
+  doc_to_choice: ["faktický", "názorový"]
+dataset_path: davidadamczyk/czechbench_subjectivity

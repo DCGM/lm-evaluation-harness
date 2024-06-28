@@ -1,0 +1,40 @@
+group: benczechmark_belebele
+group_alias: Benchmark Belebele
+task:
+- task: benchmark_belebele_0
+  task_alias: prompt-0
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Zodpověz zadanou otázku výběrem jedné z nabízených možností. Odpovídej na základě poskytnutého kontextu.
+    Zvolenou odpověď neopakuj. Vždy odpovídej pouze číslem odpovídajícím vybrané odpovědi bez dalšího komentáře."
+  doc_to_text: "Vygeneruj klasifikaci pro následující příklad:\nText:\n 1. {{mc_answer1}}\n 2. {{mc_answer2}}\n 3. {{mc_answer3}}\n 4. {{mc_answer4}}\nOdpověď: "
+  doc_to_target: !function utils.get_target_belebele
+  doc_to_choice: !function utils.get_choices_belebele
+- task: benchmark_belebele_1
+  task_alias: prompt-1
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Klasifikuj následující text dle jedné z nabízených možností. Na základě poskytnutého kontextu odpovídej pouze číslem odpovídajícím vybrané odpovědi bez dalšího komentáře."
+  doc_to_text: "Klasifikuj následující text:\nText:\n 1. {{mc_answer1}}\n 2. {{mc_answer2}}\n 3. {{mc_answer3}}\n 4. {{mc_answer4}}\nOdpověď: "
+  doc_to_target: !function utils.get_target_belebele
+  doc_to_choice: !function utils.get_choices_belebele
+- task: benchmark_belebele_2
+  task_alias: prompt-2
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Pro daný text urči třídu z nabízených možností na základě poskytnutého kontextu. Neopakuj zvolenou odpověď. Odpověz číslem odpovědi bez komentářů."
+  doc_to_text: "Pro daný text urči třídu:\nText:\n 1. {{mc_answer1}}\n 2. {{mc_answer2}}\n 3. {{mc_answer3}}\n 4. {{mc_answer4}}\nOdpověď: "
+  doc_to_target: !function utils.get_target_belebele
+  doc_to_choice: !function utils.get_choices_belebele
+- task: benchmark_belebele_3
+  task_alias: prompt-3
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Vyber třídu pro daný text z nabízených možností na základě poskytnutého kontextu. Neopakuj vybranou odpověď. Vrať pouze číslo odpověďi bez dalších komentářů."
+  doc_to_text: "Vyber třídu pro daný text:\nText:\n 1. {{mc_answer1}}\n 2. {{mc_answer2}}\n 3. {{mc_answer3}}\n 4. {{mc_answer4}}\nOdpověď: "
+  doc_to_target: !function utils.get_target_belebele
+  doc_to_choice: !function utils.get_choices_belebele
+- task: benchmark_belebele_4
+  task_alias: prompt-4
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Klasifikuj příklad výběrem jedné z nabízených možností podle poskytnutého kontextu. Neopakuj vybranou odpověď. Odpověz jen číslem odpovídající vybrané možnosti bez jakýchkoliv komentářů."
+  doc_to_text: "Klasifikuj následující příklad:\nText:\n 1. {{mc_answer1}}\n 2. {{mc_answer2}}\n 3. {{mc_answer3}}\n 4. {{mc_answer4}}\nOdpověď: "
+  doc_to_target: !function utils.get_target_belebele
+  doc_to_choice: !function utils.get_choices_belebele
+dataset_path: davidadamczyk/czechbench_belebele

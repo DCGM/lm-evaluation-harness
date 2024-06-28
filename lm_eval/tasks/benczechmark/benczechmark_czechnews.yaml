@@ -1,0 +1,69 @@
+group: benczechmark_czechnews
+group_alias: Benchmark Czech News
+task:
+- task: benchmark_czechnews_0
+  task_alias: prompt-0
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Pro zadaný text pocházející ze zpravodajského článku urči jeho kategorii z následujícího výběru:
+2) Domácí
+3) Sport
+4) Kultura
+1) Zahraniční
+5) Ekonomika
+Vždy vracej pouze název kategorie bez dalšího komentáře."
+  doc_to_text: "Urči kategorii pro následující příklad:\nText: {{brief}}\nKlasifikace: "
+  doc_to_target: !function utils.get_czech_news_target
+  doc_to_choice: ["Zahraniční", "Domácí", "Sport", "Kultura", "Ekonomika"]
+- task: benchmark_czechnews_1
+  task_alias: prompt-1
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Pro pro novinový článek urči jeho kategorii z následujících možností:
+2) Domácí
+3) Sport
+1) Zahraniční
+4) Kultura
+5) Ekonomika
+Odpověz pouze názevem kategorie bez jakýchkoliv komentářů."
+  doc_to_text: "Pro novinový článek urči jeho kategorii:\nText: {{brief}}\nKategorie:"
+  doc_to_target: !function utils.get_czech_news_target
+  doc_to_choice: ["Zahraniční", "Domácí", "Sport", "Kultura", "Ekonomika"]
+- task: benchmark_czechnews_2
+  task_alias: prompt-2
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Urči kategorii novinového člínku z následujících možností:
+1) Zahraniční
+2) Domácí
+3) Sport
+4) Kultura
+5) Ekonomika
+Vracej pouze kategorii bez dalších poznámek."
+  doc_to_text: "Urči kategorii novinového článku:\nText: {{brief}}\nKategorie:"
+  doc_to_target: !function utils.get_czech_news_target
+  doc_to_choice: ["Zahraniční", "Domácí", "Sport", "Kultura", "Ekonomika"]
+- task: benchmark_czechnews_3
+  task_alias: prompt-3
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Pro daný novinový člínek urči jeho kategorii z následujících možností:
+5) Ekonomika
+1) Zahraniční
+4) Kultura
+2) Domácí
+3) Sport
+Odpověz názvem kategorie bez komentářů."
+  doc_to_text: "Pro daný novinový článek urči jeho kategorii:\nText: {{brief}}\nKategorie: "
+  doc_to_target: !function utils.get_czech_news_target
+  doc_to_choice: ["Zahraniční", "Domácí", "Sport", "Kultura", "Ekonomika"]
+- task: benchmark_czechnews_4
+  task_alias: prompt-4
+  include: templates/multichoice/multi_class_template_wtrain_yaml
+  description: "Urči kategorii pro zadaný text ze zpravodajského článku z následujícího výběru:
+3) Sport
+5) Ekonomika
+4) Kultura
+1) Zahraniční
+2) Domácí
+Vrať pouze název kategorie bez dalších komentářů."
+  doc_to_text: "Urči kategorii pro zadaný text:\nText: {{brief}}\nKategorie: "
+  doc_to_target: !function utils.get_czech_news_target
+  doc_to_choice: ["Zahraniční", "Domácí", "Sport", "Kultura", "Ekonomika"]
+dataset_path: davidadamczyk/czechbench_czech_news

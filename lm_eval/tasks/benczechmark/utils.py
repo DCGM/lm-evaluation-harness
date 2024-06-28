@@ -331,3 +331,20 @@ def mmlu_get_question_text_umimeto(dataset):
     choices_text = "\n".join(f"{c}. {dataset[c]}" for c in dataset_answer_keys)
     topic = dataset["topic"]
     return f"{topic}: {question_text}\n{choices_text}\nOdpověď: "
+
+
+def get_choices_belebele(dataset):
+    return [
+        f"1. {dataset['mc_answer1']}",
+        f"2. {dataset['mc_answer2']}",
+        f"3. {dataset['mc_answer3']}",
+        f"4. {dataset['mc_answer4']}"
+    ]
+
+
+def get_target_belebele(dataset):
+    return int(dataset['correct_answer_num']) - 1
+
+
+def get_czech_news_target(dataset):
+    return dataset['category'] - 1
