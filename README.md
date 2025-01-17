@@ -84,6 +84,19 @@ truncate_strategy=leave_description \
     --log_samples \
     --verbosity DEBUG \
     --num_fewshot 3
+
+# Citing our work
+```bibtex
+@misc{fajcik2024benczechmarkczechcentricmultitask,
+      title={BenCzechMark : A Czech-centric Multitask and Multimetric Benchmark for Large Language Models with Duel Scoring Mechanism}, 
+      author={Martin Fajcik and Martin Docekal and Jan Dolezal and Karel Ondrej and Karel Beneš and Jan Kapsa and Pavel Smrz and Alexander Polok and Michal Hradis and Zuzana Neverilova and Ales Horak and Radoslav Sabol and Michal Stefanik and Adam Jirkovsky and David Adamczyk and Petr Hyner and Jan Hula and Hynek Kydlicek},
+      year={2024},
+      eprint={2412.17933},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2412.17933}, 
+}
+```
     
 # See jobs/scripts/models/eval_L_vllm_master.sh for multinode evaluation with VLLM.
 ```
