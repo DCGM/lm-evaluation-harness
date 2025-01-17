@@ -84,8 +84,10 @@ truncate_strategy=leave_description \
     --log_samples \
     --verbosity DEBUG \
     --num_fewshot 3
+```
 
-# Citing our work
+# Citation
+
 ```bibtex
 @misc{fajcik2024benczechmarkczechcentricmultitask,
       title={BenCzechMark : A Czech-centric Multitask and Multimetric Benchmark for Large Language Models with Duel Scoring Mechanism}, 
