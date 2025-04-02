@@ -15,6 +15,7 @@ cd $WORKDIR
 export NCCL_IB_GID_INDEX=3
 #export TORCH_NCCL_USE_COMM_NONBLOCKING=1
 #export NCCL_SOCKET_IFNAME=eth0
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Create temp directory for ray
 hostname=$(hostname)
@@ -36,10 +37,24 @@ full_job_id="${job_array_id}_${task_id}"
 LOCKDIR="${WORKDIR}/locks_${full_job_id}"
 mkdir -p $LOCKDIR
 
+if [ "$SUMLOGP" = "no" ]; then
+  NORMALIZE_LOG_PROBS="True"
+else
+  NORMALIZE_LOG_PROBS="False"
+fi
+
 HEAD_STARTED_FILE="${LOCKDIR}/ray_head_started_${full_job_id}.signal"
 WORKER_CONNECTED_FILE="${LOCKDIR}/worker_connected_${LOCAL_ADDR}_${full_job_id}.signal"
 
 TOTAL_GPUS=$((num_gpus * num_nodes))
+
+# Truncate strategy argument based on truncate_strategy argument
+TRUNCATE_STRATEGY_ARG=""
+if [ "$TRUNCATE_STRATEGY" != "none" ]; then
+  TRUNCATE_STRATEGY_ARG=",truncate_strategy=$TRUNCATE_STRATEGY"
+fi
+
+export NUMEXPR_MAX_THREADS=$(nproc --all)
 
 if [ "$MASTER_ADDR" == "$LOCAL_ADDR" ]; then
   # Start the Ray head
@@ -50,8 +65,6 @@ if [ "$MASTER_ADDR" == "$LOCAL_ADDR" ]; then
   touch $HEAD_STARTED_FILE
 
   echo "Executing in $(pwd)"
-
-  export NUMEXPR_MAX_THREADS=$(nproc --all)
 
   # Wait for all worker nodes to connect
   echo "Waiting for all worker nodes to connect..."
@@ -71,7 +84,7 @@ if [ "$MASTER_ADDR" == "$LOCAL_ADDR" ]; then
 
   $PYTHON ./print_ray_nodes_once.py
   $PYTHON -m lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME,tensor_parallel_size=$TOTAL_GPUS,enforce_eager=True,worker_use_ray=True,dtype=bfloat16,gpu_memory_utilization=0.8,max_length=2048,normalize_log_probs=$NORMALIZE_LOG_PROBS,trust_remote_code=True$TRUNCATE_STRATEGY_ARG \
+    --model_args pretrained=$MODEL_NAME,tensor_parallel_size=$TOTAL_GPUS,enforce_eager=True,distributed_executor_backend=ray,dtype=bfloat16,gpu_memory_utilization=0.8,max_length=2048,normalize_log_probs=$NORMALIZE_LOG_PROBS,trust_remote_code=True$TRUNCATE_STRATEGY_ARG \
     --tasks "$TASK" \
     --batch_size 1 \
     --output_path "$OUTPUT_PATH" \
