@@ -1272,9 +1272,15 @@ class ConfigurableTask(Task):
         self, doc: dict, ctx: str, **kwargs
     ) -> Union[List[Instance], Instance]:
         if self.OUTPUT_TYPE == "loglikelihood":
-            arguments = (ctx, self.doc_to_target(doc))
+            tar = self.doc_to_target(doc)
+            if isinstance(tar, str) and not isinstance(tar, SegmentedString):
+                tar = SegmentedString((tar,), ("target_cont",))
+            arguments = (ctx, tar)
         elif self.OUTPUT_TYPE == "loglikelihood_rolling":
-            arguments = (self.doc_to_target(doc),)
+            tar = self.doc_to_target(doc)
+            if isinstance(tar, str) and not isinstance(tar, SegmentedString):
+                tar = SegmentedString((tar,), ("target_cont",))
+            arguments = (tar,)
         elif self.OUTPUT_TYPE == "multiple_choice":
             choices = self.doc_to_choice(doc)
             target_delimiter = SegmentedString((self.config.target_delimiter,), ("target_delimiter",))

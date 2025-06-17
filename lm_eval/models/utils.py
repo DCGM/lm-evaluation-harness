@@ -738,7 +738,8 @@ def segmented_tok_encode(string: SegmentedString, tokenizer: PreTrainedTokenizer
         max_length: int
             The maximum number of output tokens.
         truncate_strategy: Optional[str]
-            The strategy to use when truncating the string. If None, the string will be truncated to the max_length.
+            The strategy to use when truncating the string. If None, the string will not be truncated.
+            If "to_max_length", the string will be truncated to the max_length.
             If "leave_description", the string will be truncated to the max_length, but the description will be kept
             in full.
         add_special_tokens: bool
@@ -864,8 +865,12 @@ def segmented_tok_encode(string: SegmentedString, tokenizer: PreTrainedTokenizer
                     segmented_tokens = proposed_segmented_tokens
                     segment_labels = proposed_segment_labels
 
-        else:
-            raise ValueError(f"Truncate strategy {truncate_strategy} not recognized!")
+        elif truncate_strategy == "to_max_length":
+            print("truncate to max_length", len(encoding), max_length)
+            encoding = encoding[-max_length:]
+            segmented_tokens = truncate_token_segments_from_left(segmented_tokens, max_length)
+            if segment_labels is not None:
+                segment_labels = segment_labels[-len(segmented_tokens):]
     if has_continuation and  "target_cont" not in segment_labels:
         raise ValueError(f"Continuation not found in {str(string)}\n{str(segment_labels)}")
     return encoding, segmented_tokens, segment_labels

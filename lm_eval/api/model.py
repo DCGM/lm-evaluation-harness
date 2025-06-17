@@ -350,7 +350,7 @@ class TemplateLM(LM):
         else:
             inp = context + continuation
             truncation_ld = (hasattr(self, 'truncate_strategy') and  self.truncate_strategy == "leave_description")
-            if  truncation_ld and \
+            if truncation_ld and \
                 (type(inp) == SegmentedString
                  and "description" in inp.labels) or \
                 (type(inp) == tuple and
@@ -370,11 +370,18 @@ class TemplateLM(LM):
                         f"Disabling truncation strategy {self.truncate_strategy}, as there is no description in the inputs.")
                     self.truncate_strategy = None
 
-                whole_enc = self.tok_encode(inp)
-                context_enc = self.tok_encode(context)
+                inp = SegmentedString([context, continuation], labels=["context", "continuation"])
+                whole_enc, segment_tokens, segment_labels = self.tok_encode(inp, return_segment_tokens=True)
 
-                context_enc_len = len(context_enc)
-                continuation_enc = whole_enc[context_enc_len:]
+                try:
+                    context_enc = segment_tokens[segment_labels.index("context")]
+                except ValueError:
+                    context_enc = []
+
+                try:
+                    continuation_enc = segment_tokens[segment_labels.index("continuation")]
+                except ValueError:
+                    continuation_enc = []
 
         return context_enc, continuation_enc
 

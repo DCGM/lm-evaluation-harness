@@ -1,4 +1,8 @@
 # Changelog / Things to be aware of!
+* __pre-release v0.5__  
+    - bugfix: API models are now able to work with SegmentedStrings.
+    - Support of to_max_length truncation strategy for SegmentedStrings.
+
 * __pre-release v0.4__  
     - bugfix: F1 was sometimes corresponding to binary F1, and sometimes to macro F1. F1 was not used on leaderboard, however if you used it, you might want to recompute your tasks.
     - minor fixes, BCM tests added
