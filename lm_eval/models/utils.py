@@ -866,7 +866,6 @@ def segmented_tok_encode(string: SegmentedString, tokenizer: PreTrainedTokenizer
                     segment_labels = proposed_segment_labels
 
         elif truncate_strategy == "to_max_length":
-            print("truncate to max_length", len(encoding), max_length)
             encoding = encoding[-max_length:]
             segmented_tokens = truncate_token_segments_from_left(segmented_tokens, max_length)
             if segment_labels is not None:
