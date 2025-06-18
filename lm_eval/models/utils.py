@@ -795,9 +795,9 @@ def segmented_tok_encode(string: SegmentedString, tokenizer: PreTrainedTokenizer
 
             try:
                 desc_pos = string.labels.index("description")
-            except ValueError as e:
-                print(f"Description not found in {str(string)}\n{str(string.labels)}")
-                raise e
+            except ValueError:
+                raise RuntimeError(f"Description not found. Make sure that you are using leave_description truncation strategy only with tasks using description.\n"
+                                   f"String:\n\t{str(string)}\n\nSegment labels:\n\t{str(string.labels)}.")
 
             # we take everything before and the description itself, then we will truncate the rest
             desc_tokens = segmented_tokens[desc_pos]
