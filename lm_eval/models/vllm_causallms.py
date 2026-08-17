@@ -19,10 +19,35 @@ from lm_eval.utils import (
 
 
 try:
-    import ray
     from vllm import LLM, SamplingParams
     from vllm.lora.request import LoRARequest
-    from vllm.transformers_utils.tokenizer import get_tokenizer
+    try:
+        from vllm.transformers_utils.tokenizer import get_tokenizer
+    except (ModuleNotFoundError, ImportError):
+        from transformers import AutoTokenizer
+
+        def get_tokenizer(
+            tokenizer_name,
+            tokenizer_mode="auto",
+            trust_remote_code=False,
+            tokenizer_revision=None,
+            **kwargs,
+        ):
+            return AutoTokenizer.from_pretrained(
+                tokenizer_name,
+                use_fast=(tokenizer_mode != "slow"),
+                trust_remote_code=trust_remote_code,
+                revision=tokenizer_revision,
+                **kwargs,
+            )
+    try:
+        import ray
+    except (ModuleNotFoundError, ImportError):
+        ray = None
+    try:
+        from vllm.inputs import TokensPrompt
+    except (ModuleNotFoundError, ImportError):
+        TokensPrompt = None
 except ModuleNotFoundError:
     pass
 
@@ -30,6 +55,29 @@ if TYPE_CHECKING:
     pass
 
 eval_logger = eval_logger
+
+
+def _filter_llm_kwargs(model_args):
+    """Drop kwargs this vLLM's EngineArgs no longer accepts (e.g. swap_space)."""
+    try:
+        import dataclasses
+
+        from vllm.engine.arg_utils import EngineArgs
+
+        allowed = {f.name for f in dataclasses.fields(EngineArgs)}
+    except Exception:
+        return model_args
+    dropped = sorted(k for k in model_args if k not in allowed)
+    if dropped:
+        eval_logger.warning(f"vLLM EngineArgs does not accept {dropped}; dropping")
+    return {k: v for k, v in model_args.items() if k in allowed}
+
+
+def _token_prompts(requests):
+    """Wrap token-id lists as vLLM prompt inputs (LLM.generate(prompt_token_ids=...) is gone)."""
+    if TokensPrompt is None:
+        return [{"prompt_token_ids": list(r)} for r in requests]
+    return [TokensPrompt(prompt_token_ids=list(r)) for r in requests]
 
 
 @register_model("vllm")
@@ -92,7 +140,11 @@ class VLLM(TemplateLM):
             "tokenizer_revision": tokenizer_revision,
             "trust_remote_code": trust_remote_code,
             "tensor_parallel_size": int(tensor_parallel_size),
-            "max_model_len": int(self._max_length) if self._max_length else None,
+            # One token of engine headroom: scoring calls send prompts of up to
+            # exactly max_length tokens plus the 1 mandatory generated token, and
+            # modern vLLM validates prompt_len + 1 <= max_model_len. lm-eval still
+            # truncates all prompts to max_length, so scoring is unaffected.
+            "max_model_len": int(self._max_length) + 1 if self._max_length else None,
             "swap_space": int(swap_space),
             "quantization": quantization,
             "seed": int(seed),
@@ -106,7 +158,7 @@ class VLLM(TemplateLM):
             else batch_size
         )
         if self.data_parallel_size <= 1:
-            self.model = LLM(**self.model_args)
+            self.model = LLM(**_filter_llm_kwargs(self.model_args))
         else:
             eval_logger.warning(
                 "You might experience occasional issues with model weight downloading when data_parallel is in use. To ensure stable performance, run with data_parallel_size=1 until the weights are downloaded and cached."
@@ -213,6 +265,15 @@ class VLLM(TemplateLM):
             add_special_tokens = False or self.add_bos_token
 
         if self.truncate_strategy is None:
+            if return_segment_tokens:
+                # _encode_pair disables the truncate strategy for prompts without a
+                # description segment (e.g. a task config with an empty description),
+                # then still asks for per-segment tokens; the plain-encode branch
+                # below cannot provide them. Segment without truncation instead
+                # (strategy None => no truncation).
+                return segmented_tok_encode(
+                    string, self.tokenizer, self.max_length, None, add_special_tokens
+                )
             encoding: Union[List[List[int]], List[int]] = self.tokenizer(
                 string,
                 add_special_tokens=add_special_tokens,
@@ -264,9 +325,10 @@ class VLLM(TemplateLM):
             def run_inference_one_model(
                 model_args: dict, sampling_params, requests: List[List[int]]
             ):
-                llm = LLM(**model_args)
+                llm = LLM(**_filter_llm_kwargs(model_args))
                 return llm.generate(
-                    prompt_token_ids=requests, sampling_params=sampling_params
+                    _token_prompts(requests),
+                    sampling_params=sampling_params,
                 )
 
             # dispatch requests to all self.data_parallel_size workers, in interleaved fashion
@@ -282,14 +344,14 @@ class VLLM(TemplateLM):
 
         if self.lora_request is not None:
             outputs = self.model.generate(
-                prompt_token_ids=requests,
+                _token_prompts(requests),
                 sampling_params=sampling_params,
                 use_tqdm=True if self.batch_size == "auto" else False,
                 lora_request=self.lora_request,
             )
         else:
             outputs = self.model.generate(
-                prompt_token_ids=requests,
+                _token_prompts(requests),
                 sampling_params=sampling_params,
                 use_tqdm=True if self.batch_size == "auto" else False,
             )
