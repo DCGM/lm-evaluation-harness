@@ -364,14 +364,21 @@ class TemplateLM(LM):
                 context_enc = [t for tokens in segment_tokens[:split_pos] for t in tokens]
                 continuation_enc = [t for tokens in segment_tokens[split_pos:] for t in tokens]
             else:
+                restore_truncate_strategy = False
                 if truncation_ld:
                     # At this point, disable leave_description truncation strategy
                     eval_logger.warning(
                         f"Disabling truncation strategy {self.truncate_strategy}, as there is no description in the inputs.")
+                    original_truncate_strategy = self.truncate_strategy
                     self.truncate_strategy = None
+                    restore_truncate_strategy = True
 
                 inp = SegmentedString([context, continuation], labels=["context", "continuation"])
-                whole_enc, segment_tokens, segment_labels = self.tok_encode(inp, return_segment_tokens=True)
+                try:
+                    whole_enc, segment_tokens, segment_labels = self.tok_encode(inp, return_segment_tokens=True)
+                finally:
+                    if restore_truncate_strategy:
+                        self.truncate_strategy = original_truncate_strategy
 
                 try:
                     context_enc = segment_tokens[segment_labels.index("context")]

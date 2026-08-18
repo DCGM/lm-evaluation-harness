@@ -742,6 +742,14 @@ class HFLM(TemplateLM):
             special_tokens_kwargs = {"add_special_tokens": add_special_tokens}
 
         if self.truncate_strategy is None:
+            if return_segment_tokens:
+                return segmented_tok_encode(
+                    string,
+                    self.tokenizer,
+                    self.max_length,
+                    None,
+                    **special_tokens_kwargs,
+                )
             encoding = self.tokenizer.encode(string, **special_tokens_kwargs)
 
             # left-truncate the encoded context to be at most `left_truncate_len` tokens long

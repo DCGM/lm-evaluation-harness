@@ -306,7 +306,7 @@ class TemplateAPI(TemplateLM):
                         string,
                         self.tokenizer,
                         self.max_length if left_truncate_len is None else left_truncate_len,
-                        "to_max_length",
+                        None,
                         add_special_tokens,
                     )
                     if return_segment_tokens:
