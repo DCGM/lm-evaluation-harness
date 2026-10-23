@@ -698,7 +698,9 @@ class HFLM(TemplateLM):
                     (batch_size, max_length), device=self.device
                 ).long()
             for _ in range(5):
-                out = F.log_softmax(self._model_call(test_batch, **call_kwargs), dim=-1)  # noqa: F841
+                out = F.log_softmax(
+                    self._model_call(test_batch, **call_kwargs), dim=-1, dtype=torch.float32
+                )  # noqa: F841
 
             return batch_size
 
@@ -1112,8 +1114,10 @@ class HFLM(TemplateLM):
                     "labels": batched_conts,
                 }
 
+            # Keep log probabilities and their reductions in FP32 even when the
+            # model returns BF16/FP16 logits, especially for long documents.
             multi_logits = F.log_softmax(
-                self._model_call(batched_inps, **call_kwargs), dim=-1
+                self._model_call(batched_inps, **call_kwargs), dim=-1, dtype=torch.float32
             )  # [batch, padding_length (inp or cont), vocab]
 
             for (request_str, ctx_tokens, _), logits, inplen, cont_toks in zip(
